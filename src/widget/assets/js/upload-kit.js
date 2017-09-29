@@ -156,11 +156,9 @@
                 if (options.multiple) {
                     name += '[' + index + ']';
                 }
-                //console.log(options);
-                
+                //console.log(options.text_field);
+
                 var item = $('<li>', {"class": "upload-kit-item done"})
-                        .append($('<input/>', {"name": name + '[caption]', "value": file.caption, "type": "text", "placeholder": "Caption", "class":"upload-file-caption", "id":name + '_caption'}))
-                        .append($('<input/>', {"name": name + '[description]', "value": file.caption, "type": "text", "placeholder": "Description", "class":"upload-file-description", "id":name + '_description'}))
                         .append($('<input/>', {"name": name + '[' + options.pathAttributeName + ']', "value": file[options.pathAttribute], "type": "hidden"}))
                         .append($('<input/>', {"name": name + '[name]', "value": file.name, "type": "hidden"}))
                         .append($('<input/>', {"name": name + '[size]', "value": file.size, "type": "hidden"}))
@@ -182,6 +180,11 @@
                     item.prepend('<div class="dummy-image"> &nbsp; </div>');
                     item.css('backgroundImage', '');
                     item.find('span.name').text(file.name);
+                }
+
+                //Creating Text Fields 
+                for (i = 0; i < options.text_field.length; i++) {
+                    item.append($('<input/>', {"type": "text", "name": name + '[' + options.text_field[i].name + ']', "id": name.replace(/[^a-zA-Z0-9]/g,'_') + '_' + options.text_field[i].name, "value": options.text_field[i].value, "placeholder": options.text_field[i].placeholder, "class": options.text_field[i].class}));
                 }
                 return item;
             },
@@ -206,7 +209,7 @@
             updateOrder: function () {
                 $files.find('.upload-kit-item').each(function (index, item) {
                     $(item).find('input[data-role=order]').val(index);
-                })
+                });
             }
         };
 
