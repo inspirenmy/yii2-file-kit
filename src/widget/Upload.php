@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Author: Eugine Terentev <eugine@terentev.net>
  */
@@ -18,62 +19,82 @@ use yii\widgets\InputWidget;
  * Class Upload
  * @package trntv\filekit\widget
  */
-class Upload extends InputWidget
-{
+class Upload extends InputWidget {
+
     /**
      * @var
      */
     public $files;
+
     /**
      * @var array|\ArrayObject
      */
     public $url;
+
     /**
      * @var array
      */
     public $clientOptions = [];
+
     /**
      * @var bool
      */
     public $showPreviewFilename = false;
+
     /**
      * @var bool
      */
     public $multiple = false;
+
     /**
      * @var bool
      */
     public $sortable = false;
+
     /**
      * @var int min file size in bytes
      */
     public $minFileSize;
+
     /**
      * @var int
      */
     public $maxNumberOfFiles = 1;
+
     /**
      * @var int max file size in bytes
      */
     public $maxFileSize;
+
     /**
      * @var string regexp
      */
     public $acceptFileTypes;
+
     /**
      * @var string
      */
     public $messagesCategory = 'filekit/widget';
+
     /**
      * @var bool preview image file or not in the upload box.
      */
     public $previewImage = true;
 
     /**
+     * @var array of custom Text Fields which will be rendered with uploaded file thumbnail
+     */
+    public $text_field = array();
+
+    /**
+     * Template for custom Text Fields which will be rendered with uploaded file thumbnail 
+     */
+    public $text_field_file = '_text_field_file.php';
+
+    /**
      * @throws \yii\base\InvalidConfigException
      */
-    public function init()
-    {
+    public function init() {
         parent::init();
 
         $this->registerMessages();
@@ -98,38 +119,69 @@ class Upload extends InputWidget
             $this->files = $this->multiple ? $this->value : [$this->value];
         }
 
+        //Preparing custom fileds from Template , $text_field_file
+        if (!empty($this->text_field_file)) {
+            $text_fileds = file(dirname(__FILE__) . DIRECTORY_SEPARATOR . $this->text_field_file);
+            foreach ($text_fileds as $tf) {
+                $row = explode(' ', $tf);
+                $temp = array();
+                foreach ($row as $element) {
+                    $ele = explode('=', $element);
+                    if (count($ele) == 2) {
+                        switch ($ele[0]) {
+                            case 'name':
+                                $temp['name'] = str_replace('"', '', $ele[1]);
+                                break;
+                            case 'class':
+                                $temp['class'] = str_replace('"', '', $ele[1]);
+                                break;
+                            case 'placeholder':
+                                $temp['placeholder'] = str_replace('"', '', $ele[1]);
+                                break;
+                            case 'value':
+                                $temp['value'] = str_replace('"', '', $ele[1]);
+                                break;                            
+                        }                        
+                    }
+                }
+                if(!empty($temp)){
+                    array_push($this->text_field, $temp);
+                }
+                
+            }
+        }
+
         $this->clientOptions = ArrayHelper::merge(
-            [
-                'url' => Url::to($this->url),
-                'multiple' => $this->multiple,
-                'sortable' => $this->sortable,
-                'maxNumberOfFiles' => $this->maxNumberOfFiles,
-                'maxFileSize' => $this->maxFileSize,
-                'minFileSize' => $this->minFileSize,
-                'acceptFileTypes' => $this->acceptFileTypes,
-                'files' => $this->files,
-                'previewImage' => $this->previewImage,
-                'showPreviewFilename' => $this->showPreviewFilename,
-                'pathAttribute' => 'path',
-                'baseUrlAttribute' => 'base_url',
-                'pathAttributeName' => 'path',
-                'baseUrlAttributeName' => 'base_url',
-                'messages' => [
-                    'maxNumberOfFiles' => Yii::t($this->messagesCategory, 'Maximum number of files exceeded'),
-                    'acceptFileTypes' => Yii::t($this->messagesCategory, 'File type not allowed'),
-                    'maxFileSize' => Yii::t($this->messagesCategory, 'File is too large'),
-                    'minFileSize' => Yii::t($this->messagesCategory, 'File is too small')
-                ]
-            ],
-            $this->clientOptions
+                        [
+                    'url' => Url::to($this->url),
+                    'multiple' => $this->multiple,
+                    'sortable' => $this->sortable,
+                    'maxNumberOfFiles' => $this->maxNumberOfFiles,
+                    'maxFileSize' => $this->maxFileSize,
+                    'minFileSize' => $this->minFileSize,
+                    'acceptFileTypes' => $this->acceptFileTypes,
+                    'files' => $this->files,
+                    'previewImage' => $this->previewImage,
+                    'showPreviewFilename' => $this->showPreviewFilename,
+                    'pathAttribute' => 'path',
+                    'baseUrlAttribute' => 'base_url',
+                    'pathAttributeName' => 'path',
+                    'baseUrlAttributeName' => 'base_url',
+                    'messages' => [
+                        'maxNumberOfFiles' => Yii::t($this->messagesCategory, 'Maximum number of files exceeded'),
+                        'acceptFileTypes' => Yii::t($this->messagesCategory, 'File type not allowed'),
+                        'maxFileSize' => Yii::t($this->messagesCategory, 'File is too large'),
+                        'minFileSize' => Yii::t($this->messagesCategory, 'File is too small')
+                    ],
+                    'text_field' => $this->text_field
+                        ], $this->clientOptions
         );
     }
 
     /**
      * @return void Registers widget translations
      */
-    protected function registerMessages()
-    {
+    protected function registerMessages() {
         if (!array_key_exists($this->messagesCategory, Yii::$app->i18n->translations)) {
             Yii::$app->i18n->translations[$this->messagesCategory] = [
                 'class' => 'yii\i18n\PhpMessageSource',
@@ -145,26 +197,24 @@ class Upload extends InputWidget
     /**
      * @return string
      */
-    public function getFileInputName()
-    {
+    public function getFileInputName() {
         return sprintf('_fileinput_%s', $this->id);
     }
 
     /**
      * @return string
      */
-    public function run()
-    {
+    public function run() {
         $this->registerClientScript();
         $content = Html::beginTag('div');
         $content .= Html::hiddenInput($this->name, null, [
-            'class' => 'empty-value',
-            'id' => $this->options['id']
+                    'class' => 'empty-value',
+                    'id' => $this->options['id']
         ]);
         $content .= Html::fileInput($this->getFileInputName(), null, [
-            'name' => $this->getFileInputName(),
-            'id' => $this->getId(),
-            'multiple' => $this->multiple
+                    'name' => $this->getFileInputName(),
+                    'id' => $this->getId(),
+                    'multiple' => $this->multiple
         ]);
         $content .= Html::endTag('div');
         return $content;
@@ -173,8 +223,7 @@ class Upload extends InputWidget
     /**
      * Registers required script for the plugin to work as jQuery File Uploader
      */
-    public function registerClientScript()
-    {
+    public function registerClientScript() {
         UploadAsset::register($this->getView());
         $options = Json::encode($this->clientOptions);
         if ($this->sortable) {
@@ -182,4 +231,5 @@ class Upload extends InputWidget
         }
         $this->getView()->registerJs("jQuery('#{$this->getId()}').yiiUploadKit({$options});");
     }
+
 }
