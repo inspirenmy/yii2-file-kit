@@ -184,7 +184,25 @@
 
                 //Creating Text Fields 
                 for (i = 0; i < options.text_field.length; i++) {
-                    item.append($('<input/>', {"type": "text", "name": name + '[' + options.text_field[i].name + ']', "id": name.replace(/[^a-zA-Z0-9]/g,'_') + '_' + options.text_field[i].name, "value": options.text_field[i].value, "placeholder": options.text_field[i].placeholder, "class": options.text_field[i].class}));
+                    item.append($('<input/>', {"type": "text", "name": name + '[' + options.text_field[i].name + ']', "id": name.replace(/[^a-zA-Z0-9]/g, '_') + '_' + options.text_field[i].name, "value": options.text_field[i].value, "placeholder": options.text_field[i].placeholder, "class": options.text_field[i].class}));
+                }
+
+                //console.log(options.itemView);
+                if (options.itemView != '') {
+                    var html = options.itemView;
+                    var $html = $('<div />', {html: html});
+                    if (options.itemAutomateName) {
+                        $html.find('input').each(function () {
+                            $(this).attr('name', name + '[' + $(this).attr('name') + ']')
+                        });
+                        $html.find('textarea').each(function () {
+                            $(this).attr('name', name + '[' + $(this).attr('name') + ']')
+                        });
+                        $html.find('select').each(function () {
+                            $(this).attr('name', name + '[' + $(this).attr('name') + ']')
+                        });
+                    }
+                    item.append($html);
                 }
                 return item;
             },
