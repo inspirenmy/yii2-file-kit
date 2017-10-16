@@ -169,19 +169,20 @@
                             "class": "name",
                             "title": file.name,
                             "text": options.showPreviewFilename ? file.name : null
-                        }))
-                        .append($('<span/>', {"class": "glyphicon glyphicon-remove-circle remove", "data-url": file.delete_url}));
+                        }));
                 if ((!file.type || file.type.search(/image\/.*/g) !== -1) && options.previewImage) {
-                    item.removeClass('not-image').addClass('image');
-                    item.prepend($('<img/>', {src: file[options.baseUrlAttribute] + '/' + file[options.pathAttribute]}));
+                    item.prepend($('<div/>', {"class": "image"}));
+                    var image_div = item.children(".image");
+                    image_div.append($('<img/>', {src: file[options.baseUrlAttribute] + '/' + file[options.pathAttribute]}));
                     item.find('span.type').text('');
                 } else {
-                    item.removeClass('image').addClass('not-image');
-                    item.prepend('<div class="dummy-image"> &nbsp; </div>');
+                    item.prepend($('<div/>', {"class": "not-image"}));
+                    var image_div = item.children(".not-image");
+                    image_div.append('<div class="dummy-image"> &nbsp; </div>');
                     item.css('backgroundImage', '');
                     item.find('span.name').text(file.name);
                 }
-
+                image_div.append($('<span/>', {"class": "glyphicon glyphicon-remove-circle remove", "data-url": file.delete_url}))
                 //Creating Text Fields 
                 for (i = 0; i < options.text_field.length; i++) {
                     item.append($('<input/>', {"type": "text", "name": name + '[' + options.text_field[i].name + ']', "id": name.replace(/[^a-zA-Z0-9]/g, '_') + '_' + options.text_field[i].name, "value": options.text_field[i].value, "placeholder": options.text_field[i].placeholder, "class": options.text_field[i].class}));

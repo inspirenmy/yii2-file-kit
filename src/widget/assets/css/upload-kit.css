@@ -6,13 +6,13 @@
 }
 .upload-kit .upload-kit-input {
     width: 150px;
+    border: 2px dashed #999;
 }
 .upload-kit .upload-kit-input,
 .upload-kit .upload-kit-item {
     position: relative;
     height: 150px;
-    color: #999;
-    border: 2px dashed #999;
+    color: #999;    
     border-radius: 7px;
     float: left;
     margin-right: 10px;
@@ -21,6 +21,7 @@
     background-position: center center;
     background-origin: border-box;
     list-style: none;
+    display: table;
 }
 .upload-kit .upload-kit-input .progress,
 .upload-kit .upload-kit-item .progress,
@@ -105,18 +106,29 @@
     color: #FFF;
     margin-top: -0.5em;
 }
-.upload-kit .upload-kit-item.image > img {
-    height: 100%;
+.upload-kit .upload-kit-item .image{
     width: auto;
     border-radius: 7px;
+    border: 2px dashed #999;    
+    position: relative;
+    display: table;
+    margin-bottom: 4px;
 }
-.upload-kit .upload-kit-item.not-image {
+.upload-kit .upload-kit-item .image > img{
+    height: 150px;
+    width: auto;
+}
+
+.upload-kit .upload-kit-item .not-image {
+    border-radius: 7px;
+    border: 2px dashed #999;        
     background-image: url('../img/file.png');
     background-size: 75%;
     background-repeat: no-repeat;
     position: relative;
-    display: block;
+    display: table;
     width: 150px;
+    background-position : center;
 }
 .upload-kit .upload-kit-item.not-image .name {
     text-align: center;
